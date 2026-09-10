@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.jena.atlas.io.IO;
 import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.JsonBuilder;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 import org.apache.jena.atlas.logging.FmtLog;
@@ -122,44 +123,30 @@ public class HttpOpaTransport implements OpaTransport {
     }
 
     public static String toJson(OpaRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append('{').append('"').append(FIELD_INPUT_ENVELOPE).append("\":{");
-        appendField(sb, FIELD_SUBJECT_ID, request.subjectId());
-        sb.append(',');
-        appendField(sb, FIELD_ACTION, request.action());
-        sb.append(',');
-        appendField(sb, FIELD_ORGANISATION_ID, request.organisationId());
-        sb.append(',');
-        appendField(sb, FIELD_DATASET_NAME, request.datasetName());
-        sb.append(',');
-        appendArrayField(sb, FIELD_VOCABULARY, request.vocabulary());
-        sb.append(',');
-        appendArrayField(sb, FIELD_SUBJECT_ATTRIBUTES, request.subjectAttributes());
-        sb.append("}}");
-        return sb.toString();
-    }
-
-    private static void appendField(StringBuilder sb, String key, String value) {
-        sb.append('"').append(key).append("\":");
-        if (value == null)
-            sb.append("null");
+        JsonBuilder builder = new JsonBuilder();
+        builder.startObject()
+                .key(FIELD_INPUT_ENVELOPE).startObject()
+                .key(FIELD_SUBJECT_ID).value(request.subjectId())
+                .key(FIELD_ACTION).value(request.action())
+                .key(FIELD_ORGANISATION_ID);
+        if (request.organisationId() == null)
+            builder.valueNull();
         else
-            sb.append('"').append(escape(value)).append('"');
-    }
+            builder.value(request.organisationId());
 
-    private static void appendArrayField(StringBuilder sb, String key, Set<String> values) {
-        sb.append('"').append(key).append("\":[");
-        boolean first = true;
-        for (String v : values) {
-            if (!first) sb.append(',');
-            sb.append('"').append(escape(v)).append('"');
-            first = false;
-        }
-        sb.append(']');
-    }
+        builder.key(FIELD_DATASET_NAME).value(request.datasetName())
+                .key(FIELD_VOCABULARY).startArray();
+        for (String v : request.vocabulary())
+            builder.value(v);
+        builder.finishArray()
+                .key(FIELD_SUBJECT_ATTRIBUTES).startArray();
+        for (String v : request.subjectAttributes())
+            builder.value(v);
+        builder.finishArray()
+                .finishObject()
+                .finishObject();
 
-    private static String escape(String s) {
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+        return JSON.toStringFlat(builder.build());
     }
 
     public static OpaResponse parseResponse(JsonValue parsed) throws OpaTransportException {
