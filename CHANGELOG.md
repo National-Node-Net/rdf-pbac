@@ -17,6 +17,13 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
 ---
 
+## 0.92.0 – 2026-09-21
+
+### Changed
+- details here
+
+---
+
 ## 0.90.1 – 2026-07-16
 
 ### Changed
