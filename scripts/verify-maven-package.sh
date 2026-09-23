@@ -2,29 +2,19 @@
 
 set -euo pipefail
 
-goal="verify"
-
-case "${1:-}" in
-  --publish)
-    goal="deploy"
-    shift
-    ;;
-esac
-
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 [--publish] v<version>" >&2
-  echo "  Without --publish, Maven verify is run and no packages are published." >&2
-  echo "  --publish  Run Maven deploy and publish packages." >&2
+  echo "Usage: $0 <branch>" >&2
+  echo "Example: $0 develop" >&2
   exit 1
 fi
 
-tag="$1"
+branch="$1"
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo_url="$(git -C "$repo_dir" remote get-url origin)"
 checkout_dir="$(mktemp -d)"
-safe_tag="${tag//\//_}"
+safe_branch="${branch//\//_}"
 log_dir="$repo_dir/target"
-log_file="$log_dir/${goal}-maven-package-${safe_tag}-$(date -u +%Y%m%dT%H%M%SZ).log"
+log_file="$log_dir/verify-maven-package-${safe_branch}-$(date -u +%Y%m%dT%H%M%SZ).log"
 github_user="${GITHUB_PACKAGES_USER:-}"
 github_token="${GITHUB_PACKAGES_TOKEN:-}"
 
@@ -47,8 +37,7 @@ echo "GitHub Packages credentials found."
 trap 'rm -rf "$checkout_dir"' EXIT
 
 mkdir -p "$log_dir"
-git clone --no-checkout --branch "$tag" --depth 1 "$repo_url" "$checkout_dir"
-git -C "$checkout_dir" -c advice.detachedHead=false checkout "$tag"
+git clone --branch "$branch" --depth 1 "$repo_url" "$checkout_dir"
 
 cat > "$checkout_dir/settings.xml" <<EOF
 <settings>
@@ -62,7 +51,7 @@ cat > "$checkout_dir/settings.xml" <<EOF
 </settings>
 EOF
 
-echo "Running Maven $goal. Output will be written to $log_file"
+echo "Writing Maven output to $log_file"
 
 if ! docker run --rm \
   --user "$(id -u):$(id -g)" \
@@ -71,9 +60,9 @@ if ! docker run --rm \
   --volume "$checkout_dir:/workspace" \
   --workdir /workspace \
   maven:3.9.11-eclipse-temurin-21 \
-  mvn --settings settings.xml --batch-mode --no-transfer-progress -Dgpg.skip=true "$goal" 2>&1 | tee "$log_file"; then
-  echo "Maven $goal failed. Log saved to $log_file" >&2
+  mvn --settings settings.xml --batch-mode --no-transfer-progress -Dgpg.skip=true verify 2>&1 | tee "$log_file"; then
+  echo "Verification failed. Log saved to $log_file" >&2
   exit 1
 fi
 
-echo "Maven $goal passed. Log saved to $log_file"
+echo "Verification passed. Log saved to $log_file"
