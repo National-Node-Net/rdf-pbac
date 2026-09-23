@@ -198,6 +198,8 @@ public abstract class AbstractTestLabelsStore {
 
     protected boolean supportsEnumeration() { return true; }
 
+    protected boolean supportsRemove() { return true; }
+
     @Test public void distinctLabels_unsupported_throws() {
         assumeFalse(supportsEnumeration());
         labelsStore = createLabelsStore();
@@ -242,6 +244,7 @@ public abstract class AbstractTestLabelsStore {
 
     @Test public void distinctLabels_afterRemove() {
         assumeTrue(supportsEnumeration());
+        assumeTrue(supportsRemove());
         labelsStore = createLabelsStore();
         labelsStore.add(triple1, "label1");
         labelsStore.add(triple2, "label2");
