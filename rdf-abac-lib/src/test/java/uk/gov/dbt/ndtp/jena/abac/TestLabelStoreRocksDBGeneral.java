@@ -67,7 +67,10 @@ public abstract class TestLabelStoreRocksDBGeneral extends AbstractTestLabelsSto
     }
 
     @Override
-    protected boolean supportsEnumeration() { return false; }
+    protected boolean supportsEnumeration() { return true; }
+
+    @Override
+    protected boolean supportsRemove() { return false; }
 
     public static class ByString extends TestLabelStoreRocksDBGeneral {
         @Override
