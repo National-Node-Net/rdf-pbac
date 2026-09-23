@@ -17,6 +17,13 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
 ---
 
+## 0.93.2 – 2026-09-23
+
+### Changed
+- Fix 0.93.1 broken release
+
+---
+
 ## 0.93.1 – 2026-09-23
 
 ### Changed
