@@ -1,6 +1,6 @@
 # Open-Source Compliance & Code Audit Report
 
-**Repository:** `rdf-abac`  
+**Repository:** `rdf-pbac`  
 **Date of Last Audit:** `2025-03-21`  
 **Reviewed By:** `Kainos Software`
 <!-- SPDX-License-Identifier: OGL-UK-3.0 -->
@@ -44,7 +44,7 @@ All required attributions have been added to [NOTICE.md](./NOTICE.md).
 
 | Scanned Files            | Plagiarism Risk Detected? | Source Match | Resolution |
 |--------------------------|---------------------------|--------------|------------|
-| TokenizerABAC.java       | `Yes` | [Source](https://raw.githubusercontent.com/apache/jena/master/jena-arq/src/main/java/org/apache/jena/riot/tokens/TokenizerText.java) | Numerous matches to file in GitHub. Comment in file says, “Derived from TokenizerText in Jena” Original file released under Apache License 2.0   |
+| TokenizerPBAC.java       | `Yes` | [Source](https://raw.githubusercontent.com/apache/jena/master/jena-arq/src/main/java/org/apache/jena/riot/tokens/TokenizerText.java) | Numerous matches to file in GitHub. Comment in file says, “Derived from TokenizerText in Jena” Original file released under Apache License 2.0   |
 | AbstractTestLabelsStore.java | `Yes`| [Source](https://www.cia.gov/the-world-factbook/about/archives/2023/field/background) | Test string in code is 7 paragraphs of text from CIA World Fact Book |
 
 Issues Identified and Resolutions:
