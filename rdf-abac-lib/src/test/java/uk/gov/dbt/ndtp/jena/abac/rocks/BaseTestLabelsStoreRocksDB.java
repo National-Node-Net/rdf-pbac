@@ -132,4 +132,35 @@ public abstract class BaseTestLabelsStoreRocksDB extends AbstractTestLabelsStore
         assertEquals(1, store.distinctLabels().size());
         assertTrue(store.distinctLabels().contains("shared-label"));
     }
+
+    @ParameterizedTest(name = "{index}: Store = {1}, LabelMode = {0}")
+    @MethodSource("provideLabelAndStorageFmt")
+    public void labelsStore_distinctLabels_closedStore_throws(LabelsStoreRocksDB.LabelMode labelMode, StoreFmt storeFmt) {
+        store = createLabelsStore(labelMode, storeFmt);
+        store.add(triple1, "label-1");
+        Labels.closeLabelsStoreRocksDB(store);
+        assertThrows(RuntimeException.class, () -> store.distinctLabels());
+    }
+
+    @ParameterizedTest(name = "{index}: Store = {1}, LabelMode = {0}")
+    @MethodSource("provideLabelAndStorageFmt")
+    public void labelsStore_distinctLabels_multipleLabelsOnOneTriple(LabelsStoreRocksDB.LabelMode labelMode, StoreFmt storeFmt) {
+        store = createLabelsStore(labelMode, storeFmt);
+        store.add(triple1, List.of("label-1", "label-2"));
+        ABACTestRunner.assertEqualsUnordered(List.of("label-1", "label-2"), List.copyOf(store.distinctLabels()));
+    }
+
+    @ParameterizedTest(name = "{index}: Store = {1}, LabelMode = {0}")
+    @MethodSource("provideLabelAndStorageFmt")
+    public void labelsStore_distinctLabels_survivesCloseAndReopen(LabelsStoreRocksDB.LabelMode labelMode, StoreFmt storeFmt) throws RocksDBException {
+        store = createLabelsStore(labelMode, storeFmt);
+        store.add(triple1, "label-1");
+        store.add(triple2, "label-2");
+        Labels.closeLabelsStoreRocksDB(store);
+        Labels.rocks.clear(); // the registry would otherwise hand back the closed instance
+
+        store = createLabelsStoreRocksDB(dbDir, labelMode, storeFmt);
+
+        ABACTestRunner.assertEqualsUnordered(List.of("label-1", "label-2"), List.copyOf(store.distinctLabels()));
+    }
 }

@@ -81,8 +81,10 @@ public abstract class AbstractTestLabelsStoreRocksDB {
 
     @AfterEach
     public void close() {
-        deleteLabelsStore();
+        // Close first: on Windows RocksDB keeps its files locked while the store is open,
+        // so deleting the directory beforehand fails with "Cannot delete file".
         closeLabelsStore();
+        deleteLabelsStore();
     }
 
     @ParameterizedTest(name = "{index}: Store = {1}, LabelMode = {0}")

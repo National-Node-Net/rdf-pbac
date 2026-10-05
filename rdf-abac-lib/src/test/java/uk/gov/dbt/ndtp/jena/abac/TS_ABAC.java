@@ -44,6 +44,21 @@ import uk.gov.dbt.ndtp.jena.abac.lib.TestAttributeStoreLocal;
 import uk.gov.dbt.ndtp.jena.abac.lib.TestAttributeStoreRemote;
 import uk.gov.dbt.ndtp.jena.abac.lib.TestAttributes;
 import uk.gov.dbt.ndtp.jena.abac.lib.TestCtxABAC;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestDecisionModel;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestCircuitBreakerConcurrency;
+import uk.gov.dbt.ndtp.jena.abac.lib.TestABACRequestGlobalProvider;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestCachingDecisionServiceProvider;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestOpaDecisionServiceProviderRequest;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestHttpOpaTransportHttp;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestCircuitBreaker;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestCircuitBreakingDecisionServiceProvider;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestDecisionServiceProviderChain;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestHttpOpaTransport;
+import uk.gov.dbt.ndtp.jena.abac.opa.TestOpaDecisionServiceProvider;
+import uk.gov.dbt.ndtp.jena.abac.lib.TestABACRequestResolution;
+import uk.gov.dbt.ndtp.jena.abac.lib.TestOpaDatasetFilterProvider;
+import uk.gov.dbt.ndtp.jena.abac.lib.TestOpaDatasetFilterProviderFiltering;
+import uk.gov.dbt.ndtp.jena.abac.labels.TestSecurityFilterByPermittedLabels;
 
 @Suite
 @SelectClasses({
@@ -100,6 +115,23 @@ import uk.gov.dbt.ndtp.jena.abac.lib.TestCtxABAC;
      */
     , TestDatasetPersistentLabelsABAC.class
     , TestDatasetPersistentLabelsABAC2.class
+
+    // OPA / policy-decision (SAG) tests
+    , TestDecisionModel.class
+    , TestCachingDecisionServiceProvider.class
+    , TestOpaDecisionServiceProviderRequest.class
+    , TestHttpOpaTransportHttp.class
+    , TestCircuitBreaker.class
+    , TestCircuitBreakingDecisionServiceProvider.class
+    , TestDecisionServiceProviderChain.class
+    , TestHttpOpaTransport.class
+    , TestOpaDecisionServiceProvider.class
+    , TestABACRequestResolution.class
+    , TestOpaDatasetFilterProvider.class
+    , TestOpaDatasetFilterProviderFiltering.class
+    , TestSecurityFilterByPermittedLabels.class
+    , TestCircuitBreakerConcurrency.class
+    , TestABACRequestGlobalProvider.class
 })
 
 public class TS_ABAC {}

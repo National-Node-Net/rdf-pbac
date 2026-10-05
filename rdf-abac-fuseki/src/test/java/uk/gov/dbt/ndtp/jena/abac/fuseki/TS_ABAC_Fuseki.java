@@ -33,6 +33,15 @@ import org.junit.platform.suite.api.Suite;
     TestServerABAC.class
     , TestServer_FMod_ABAC.class
     , TestAttributesStoreRemote.class
+
+    // OPA / policy-decision (SAG) tests
+    , TestABAC_Request.class
+    , TestABACRequestOrganisation.class
+    , TestServerABACJwt.class
+    , TestABACRequestDecideDataset.class
+    , TestServerABACJwtFallback.class
+    , TestFModABACDecisionChain.class
+    , TestServerABACOpaIntegration.class
 })
 
 public class TS_ABAC_Fuseki {
