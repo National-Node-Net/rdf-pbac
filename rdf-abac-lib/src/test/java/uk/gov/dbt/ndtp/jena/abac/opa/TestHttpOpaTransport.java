@@ -108,11 +108,16 @@ public class TestHttpOpaTransport {
 
         String json = HttpOpaTransport.toJson(request);
 
-        assertTrue(json.contains("\"subject_id\":\"user-1\""));
-        assertTrue(json.contains("\"action\":\"read\""));
-        assertTrue(json.contains("\"vocabulary\":[\"public\"]"));
-        assertTrue(json.contains("\"subject_attributes\":{\"employee\":\"true\"}"));
-        assertTrue(json.startsWith("{\"input\":{"));
+        // Parse rather than string-match: Jena's flat JSON output puts spaces around ':' and ','.
+        assertTrue(json.startsWith("{"));
+        org.apache.jena.atlas.json.JsonObject root = JSON.parse(json);
+        assertEquals(1, root.size());
+        org.apache.jena.atlas.json.JsonObject input = root.get("input").getAsObject();
+        assertEquals("user-1", input.get("subject_id").getAsString().value());
+        assertEquals("read", input.get("action").getAsString().value());
+        assertEquals(1, input.get("vocabulary").getAsArray().size());
+        assertEquals("public", input.get("vocabulary").getAsArray().get(0).getAsString().value());
+        assertEquals("true", input.get("subject_attributes").getAsObject().get("employee").getAsString().value());
     }
 
     @Test

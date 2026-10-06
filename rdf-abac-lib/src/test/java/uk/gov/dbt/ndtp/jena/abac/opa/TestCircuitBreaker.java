@@ -59,4 +59,33 @@ public class TestCircuitBreaker {
         cb.recordSuccess();
         assertEquals(CircuitBreaker.State.CLOSED, cb.state());
     }
+
+    @Test
+    void nonPositiveThreshold_isRejected() {
+        assertThrows(IllegalArgumentException.class, () -> new CircuitBreaker(0, Duration.ofSeconds(1)));
+        assertThrows(IllegalArgumentException.class, () -> new CircuitBreaker(-1, Duration.ofSeconds(1)));
+    }
+
+    @Test
+    void nullOpenDuration_isRejected() {
+        assertThrows(NullPointerException.class, () -> new CircuitBreaker(1, null));
+    }
+
+    @Test
+    void stillOpenBeforeOpenDurationElapses() {
+        CircuitBreaker cb = new CircuitBreaker(1, Duration.ofMinutes(10));
+        cb.recordFailure();
+        assertFalse(cb.allowRequest());
+        assertFalse(cb.allowRequest());
+        assertEquals(CircuitBreaker.State.OPEN, cb.state());
+    }
+
+    @Test
+    void failuresBelowThresholdKeepCircuitClosedAndRequestsAllowed() {
+        CircuitBreaker cb = new CircuitBreaker(5, Duration.ofSeconds(30));
+        for ( int i = 0 ; i < 4 ; i++ )
+            cb.recordFailure();
+        assertTrue(cb.allowRequest());
+        assertEquals(CircuitBreaker.State.CLOSED, cb.state());
+    }
 }
